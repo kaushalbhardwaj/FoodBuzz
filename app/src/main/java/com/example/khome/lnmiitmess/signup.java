@@ -2,52 +2,112 @@ package com.example.khome.lnmiitmess;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.khome.lnmiitmess.Tools.DialogBox;
 import com.example.khome.lnmiitmess.Tools.NetworkTool;
+import com.example.khome.lnmiitmess.Tools.UserInfo;
+import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class signup extends AppCompatActivity {
 
-    EditText name,rollno,email,phone,password,cpassword;
-    Button signup;
+    boolean flag;
+    String uid=null;
+    UserInfo user1=null;
+    private Toolbar mToolbar;
+    private EditText inputName, inputEmail, inputPassword,inputRoll;
+    private TextInputLayout inputLayoutName, inputLayoutEmail, inputLayoutPassword,inputLayoutRoll;
+    private Button btnSignUp;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
-        initFields();
-        signup.setOnClickListener(new View.OnClickListener() {
+        mToolbar = (Toolbar) findViewById(R.id.toolbar_su);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setTitle("Sign Up");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+        inputLayoutName = (TextInputLayout) findViewById(R.id.input_layout_name_su);
+        inputLayoutEmail = (TextInputLayout) findViewById(R.id.input_layout_email_su);
+        inputLayoutPassword = (TextInputLayout) findViewById(R.id.input_layout_password_su);
+        inputLayoutRoll = (TextInputLayout) findViewById(R.id.input_layout_roll_su);
+        inputName = (EditText) findViewById(R.id.input_name_su);
+        inputEmail = (EditText) findViewById(R.id.input_email_su);
+        inputPassword = (EditText) findViewById(R.id.input_password_su);
+        inputRoll = (EditText) findViewById(R.id.input_roll_su);
+        btnSignUp = (Button) findViewById(R.id.btn_signup);
+
+        inputName.addTextChangedListener(new MyTextWatcher(inputName));
+        inputEmail.addTextChangedListener(new MyTextWatcher(inputEmail));
+        inputPassword.addTextChangedListener(new MyTextWatcher(inputPassword));
+        inputRoll.addTextChangedListener(new MyTextWatcher(inputRoll));
+
+        btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean valid=true;
-                //valid = initValidationForm();
+                // boolean valid=true;
+                boolean valid = submitForm();
                 if (valid) {
 
-                    Toast.makeText(getApplicationContext(), "okk signup ", Toast.LENGTH_SHORT).show();
-                        if(NetworkTool.isConnectingToInternet(com.example.khome.lnmiitmess.signup.this))
-                        {
-                            Toast.makeText(getApplicationContext(), "connected to internet ", Toast.LENGTH_SHORT).show();
-                            signupFirebase();
-                        }
-                        else
+                    // Toast.makeText(getApplicationContext(), "okk signup ", Toast.LENGTH_SHORT).show();
+                    if (NetworkTool.isConnectingToInternet(com.example.khome.lnmiitmess.signup.this)) {
+                        Toast.makeText(getApplicationContext(), "connected to internet ", Toast.LENGTH_SHORT).show();
+                        signupFirebase();
+
+                    } else
                         showDialogBox();
 
                 }
             }
 
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+            return super.onOptionsItemSelected(item);
+    }
+
+    private boolean submitForm() {
+
+        if (!validateEmail()) {
+            return false;
+        }
+
+        if (!validatePassword()) {
+            return false;
+        }
+        return true;
     }
     public void signupFirebase()
     {
@@ -57,15 +117,19 @@ public class signup extends AppCompatActivity {
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    String em=email.getText().toString();
-                    Firebase ref = new Firebase("https://lnmiitmess.firebaseio.com");
-                    String pass=password.getText().toString();
+                    String em=inputEmail.getText().toString();
+                    final Firebase ref = new Firebase("https://lnmiitmess.firebaseio.com");
+                    String pass=inputPassword.getText().toString();
                     ref.createUser(em, pass, new Firebase.ValueResultHandler<Map<String, Object>>() {
                         @Override
                         public void onSuccess(Map<String, Object> result) {
                             //System.out.println("Successfully created user account with uid: " + result.get("uid"));
                             Toast.makeText(getApplicationContext(),"Successfully created user account with uid: " + result.get("uid"),Toast.LENGTH_LONG).show();
+                            boolean f=storeData();
                             ringProgressDialog.dismiss();
+                            Intent i=new Intent(getApplicationContext(),login.class);
+                            startActivity(i);
+                            finish();
                         }
 
                         @Override
@@ -84,6 +148,31 @@ public class signup extends AppCompatActivity {
             }
         }).start();
 
+    }
+    public boolean storeData()
+    {
+       final Firebase ref = new Firebase("https://lnmiitmess.firebaseio.com");
+        ref.authWithPassword(inputEmail.getText().toString(), inputPassword.getText().toString(),
+                new Firebase.AuthResultHandler() {
+                    @Override
+                    public void onAuthenticated(AuthData authData) {
+
+                        UserInfo user1=new UserInfo();
+                        user1.setUname(inputName.getText().toString());
+                        user1.setRollno(inputRoll.getText().toString());
+                        user1.setEmail(inputEmail.getText().toString());
+                        user1.setUid(authData.getUid());
+                        user1.setPassword(inputPassword.getText().toString());
+                        ref.child("users").child(authData.getUid()).setValue(user1);
+                        flag= true;
+                    }
+                    @Override
+                    public void onAuthenticationError(FirebaseError error) {
+                        // Something went wrong :(
+                        flag=false;
+                    }
+                });
+    return flag;
     }
     public void showDialogBox()
     {
@@ -111,108 +200,65 @@ public class signup extends AppCompatActivity {
         // Showing Alert Message
         alertDialog.show();
     }
-    public void initFields()
-    {
-        name=(EditText)findViewById(R.id.nameet);
-        rollno=(EditText)findViewById(R.id.rollnoet);
-        email=(EditText)findViewById(R.id.emailet);
-        phone=(EditText)findViewById(R.id.phoneet);
-        password=(EditText)findViewById(R.id.passwordet);
-        cpassword=(EditText)findViewById(R.id.cpasswordet);
-        signup=(Button)findViewById(R.id.signup);
 
 
+    private static boolean isValidEmail(String email) {
+        return !TextUtils.isEmpty(email) && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
-    public boolean initValidationForm()
-    {
-        boolean flag=true;
-        final String emailString = email.getText().toString();
-        if(!isfieldNull())
-        {
+    private boolean validateEmail() {
+        String email = inputEmail.getText().toString().trim();
 
-            flag=false;
-        }
-        if (!isValidEmail(emailString)) {
-            email.setError("Invalid Email");
-            flag=false;
-        }
-
-
-        if (!isValidPassword()) {
-            cpassword.setError("Password does not match");
-            flag=false;
-        }
-        if (!isValidPhone()) {
-            phone.setError("Invalid Phone Number");
-            flag=false;
-        }
-
-        return flag;
-    }
-    public boolean isfieldNull()
-    {
-        boolean flag=true;
-        String nm=name.getText().toString();
-        String em=email.getText().toString();
-        String pass=password.getText().toString();
-        String cp=cpassword.getText().toString();
-
-        if(nm==null)
-        {
-            name.setError("Empty!");
-            flag=false;
-        }
-        if(em==null)
-        {
-            email.setError("Empty!");
-            flag=false;
-        }
-        if(pass==null)
-        {
-            password.setError("Empty!");
-            flag=false;
-        }
-        if(cp==null)
-        {
-            cpassword.setError("Empty!");
-            flag=false;
-        }
-
-        return flag;
-    }
-    public boolean isValidEmail(String emailString)
-    {
-        String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
-                + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-
-        Pattern pattern = Pattern.compile(EMAIL_PATTERN);
-        Matcher matcher = pattern.matcher(emailString);
-        return matcher.matches();
-
-    }
-    public boolean isValidPassword()
-    {
-        String pass=password.getText().toString();
-        String cpass=cpassword.getText().toString();
-        if(pass.equals(cpass))
-        {
-            return true;
-
-        }
-        else
+        if (email.isEmpty() || !isValidEmail(email)) {
+            inputLayoutEmail.setError(getString(R.string.err_msg_email));
+            requestFocus(inputEmail);
             return false;
-
-    }
-    public boolean isValidPhone()
-    {
-        String ph=phone.getText().toString();
-        if(ph.length()==10)
-        {
-            return true;
-
+        } else {
+            inputLayoutEmail.setErrorEnabled(false);
         }
-        else
-            return false;
 
+        return true;
+    }
+    private boolean validatePassword() {
+        if (inputPassword.getText().toString().trim().isEmpty()) {
+            inputLayoutPassword.setError(getString(R.string.err_msg_password));
+            requestFocus(inputPassword);
+            return false;
+        } else {
+            inputLayoutPassword.setErrorEnabled(false);
+        }
+
+        return true;
+    }
+    private void requestFocus(View view) {
+        if (view.requestFocus()) {
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        }
+    }
+
+    private class MyTextWatcher implements TextWatcher {
+
+        private View view;
+
+        private MyTextWatcher(View view) {
+            this.view = view;
+        }
+
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        public void afterTextChanged(Editable editable) {
+            switch (view.getId()) {
+
+                case R.id.input_email_su:
+                    validateEmail();
+                    break;
+                case R.id.input_password_su:
+                    validatePassword();
+                    break;
+            }
+        }
     }
 }

@@ -1,130 +1,90 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.khome.lnmiitmess.signup">
+    android:layout_height="match_parent">
 
-
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="name"
-        android:id="@+id/name"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
+        android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="rollno"
-        android:id="@+id/rollno"
-        android:layout_below="@+id/name"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="44dp" />
+        <include
+            android:id="@+id/toolbar_su"
+            layout="@layout/toolbar" />
+    </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="emailid"
-        android:id="@+id/emailId"
-        android:layout_below="@+id/rollno"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="40dp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="phone no"
-        android:id="@+id/phoneNo"
-        android:layout_centerVertical="true" />
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:orientation="vertical"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="60dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="password"
-        android:id="@+id/textView"
-        android:layout_marginTop="47dp"
-        android:layout_below="@+id/phoneNo"
-        android:layout_alignParentStart="true" />
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_layout_name_su"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="ConfirmPass"
-        android:id="@+id/cPassword"
-        android:layout_below="@+id/textView"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="40dp" />
+            <EditText
+                android:id="@+id/input_name_su"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:hint="Full Name" />
+        </android.support.design.widget.TextInputLayout>
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="signup"
-        android:id="@+id/signup"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_layout_roll_su"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/nameet"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignStart="@+id/signup" />
+            <EditText
+                android:id="@+id/input_roll_su"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:hint="Roll No" />
+        </android.support.design.widget.TextInputLayout>
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/rollnoet"
-        android:layout_alignTop="@+id/rollno"
-        android:layout_alignStart="@+id/nameet"
-        android:layout_alignEnd="@+id/nameet" />
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_layout_email_su"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
-        android:ems="10"
-        android:id="@+id/emailet"
-        android:layout_alignTop="@+id/emailId"
-        android:layout_alignStart="@+id/rollnoet" />
+            <EditText
+                android:id="@+id/input_email_su"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:hint="Email" />
+        </android.support.design.widget.TextInputLayout>
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/phoneet"
-        android:layout_centerVertical="true"
-        android:layout_alignStart="@+id/emailet"
-        android:layout_alignEnd="@+id/emailet" />
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_layout_password_su"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:ems="10"
-        android:id="@+id/passwordet"
-        android:layout_alignTop="@+id/textView"
-        android:layout_alignStart="@+id/phoneet" />
+            <EditText
+                android:id="@+id/input_password_su"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:hint="Password" />
+        </android.support.design.widget.TextInputLayout>
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:ems="10"
-        android:id="@+id/cpasswordet"
-        android:layout_alignTop="@+id/cPassword"
-        android:layout_alignStart="@+id/signup" />
+        <Button android:id="@+id/btn_signup"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Sign Up"
+            android:background="@color/colorPrimary"
+            android:layout_marginTop="40dp"
+            android:textColor="@android:color/white"/>
 
-</RelativeLayout>
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>
+

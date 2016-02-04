@@ -3,6 +3,8 @@ package com.example.khome.lnmiitmess;
 import android.app.ProgressDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,16 +17,23 @@ import com.firebase.client.FirebaseError;
 import java.util.Map;
 
 public class newPassword extends AppCompatActivity {
-    EditText cpass,npass,opass;
+    EditText npass,opass;
     Button rpass;
+    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_password);
-        npass=(EditText)findViewById(R.id.newpass);
-        opass=(EditText)findViewById(R.id.opass);
-        rpass=(Button)findViewById(R.id.rpass);
+
+        mToolbar = (Toolbar) findViewById(R.id.toolbar_np);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setTitle("Change Pass");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        npass=(EditText)findViewById(R.id.input_password_np);
+        opass=(EditText)findViewById(R.id.input_opass_np);
+        rpass=(Button)findViewById(R.id.btn_changePass);
         rpass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -40,6 +49,14 @@ public class newPassword extends AppCompatActivity {
 
 
 
+    }
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
     public void rpassFirebase()
     {
