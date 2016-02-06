@@ -6,4 +6,6 @@
     <string name="err_msg_name">Enter your full name</string>
     <string name="err_msg_email">Enter valid email address</string>
     <string name="err_msg_password">Enter the password</string>
+    <string name="title_activity_week_after">Week_after</string>
+    <string name="title_activity_main2">Main2Activity</string>
 </resources>

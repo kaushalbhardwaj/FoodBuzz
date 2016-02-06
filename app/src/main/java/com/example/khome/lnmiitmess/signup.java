@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
@@ -42,6 +44,7 @@ public class signup extends AppCompatActivity {
     private EditText inputName, inputEmail, inputPassword,inputRoll;
     private TextInputLayout inputLayoutName, inputLayoutEmail, inputLayoutPassword,inputLayoutRoll;
     private Button btnSignUp;
+    private CoordinatorLayout coordinatorLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +54,7 @@ public class signup extends AppCompatActivity {
         getSupportActionBar().setTitle("Sign Up");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
         inputLayoutName = (TextInputLayout) findViewById(R.id.input_layout_name_su);
         inputLayoutEmail = (TextInputLayout) findViewById(R.id.input_layout_email_su);
         inputLayoutPassword = (TextInputLayout) findViewById(R.id.input_layout_password_su);
@@ -76,12 +79,15 @@ public class signup extends AppCompatActivity {
 
                     // Toast.makeText(getApplicationContext(), "okk signup ", Toast.LENGTH_SHORT).show();
                     if (NetworkTool.isConnectingToInternet(com.example.khome.lnmiitmess.signup.this)) {
-                        Toast.makeText(getApplicationContext(), "connected to internet ", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), "connected to internet ", Toast.LENGTH_SHORT).show();
+
                         signupFirebase();
 
-                    } else
-                        showDialogBox();
+                    } else {Snackbar snackbar = Snackbar.make(coordinatorLayout, "No Internet Connection!", Snackbar.LENGTH_LONG);
+                         snackbar.show();
+                     //   showDialogBox();
 
+                    }
                 }
             }
 
@@ -111,7 +117,7 @@ public class signup extends AppCompatActivity {
     }
     public void signupFirebase()
     {
-       final ProgressDialog ringProgressDialog = ProgressDialog.show(signup.this, "Please wait ...", "Downloading Image ...", true);
+       final ProgressDialog ringProgressDialog = ProgressDialog.show(signup.this, "Please wait ...", "Connecting.......", true);
         ringProgressDialog.setCancelable(false);
         ringProgressDialog.setCanceledOnTouchOutside(false);
         new Thread(new Runnable() {
@@ -124,7 +130,7 @@ public class signup extends AppCompatActivity {
                         @Override
                         public void onSuccess(Map<String, Object> result) {
                             //System.out.println("Successfully created user account with uid: " + result.get("uid"));
-                            Toast.makeText(getApplicationContext(),"Successfully created user account with uid: " + result.get("uid"),Toast.LENGTH_LONG).show();
+                            //Toast.makeText(getApplicationContext(),"Successfully created user account with uid: " + result.get("uid"),Toast.LENGTH_LONG).show();
                             boolean f=storeData();
                             ringProgressDialog.dismiss();
                             Intent i=new Intent(getApplicationContext(),login.class);
@@ -134,7 +140,29 @@ public class signup extends AppCompatActivity {
 
                         @Override
                         public void onError(FirebaseError firebaseError) {
-                            Toast.makeText(getApplicationContext(),"error",Toast.LENGTH_LONG).show();
+                            //Toast.makeText(getApplicationContext(),"error",Toast.LENGTH_LONG).show();
+                            Snackbar snackbar;
+                            switch (firebaseError.getCode()) {
+                                case FirebaseError.USER_DOES_NOT_EXIST:
+                                    snackbar = Snackbar.make(coordinatorLayout, "User Does Not Exist!", Snackbar.LENGTH_LONG);
+                                    snackbar.show();
+                                    break;
+                                case FirebaseError.INVALID_PASSWORD:
+                                    snackbar = Snackbar.make(coordinatorLayout, "Invalid Password!", Snackbar.LENGTH_LONG);
+                                    snackbar.show();
+                                    break;
+                                case FirebaseError.NETWORK_ERROR:
+                                    snackbar = Snackbar.make(coordinatorLayout, "Network Error!", Snackbar.LENGTH_LONG);
+                                    snackbar.show();
+                                    break;
+
+
+                                default:
+                                    snackbar = Snackbar.make(coordinatorLayout, "SignUp Error!", Snackbar.LENGTH_LONG);
+                                    snackbar.show();
+
+                                    break;
+                            }
                             ringProgressDialog.dismiss();
                             // there was an error
                         }
@@ -193,7 +221,7 @@ public class signup extends AppCompatActivity {
         alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 // Write your code here to execute after dialog closed
-                Toast.makeText(getApplicationContext(), "You clicked on OK", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "You clicked on OK", Toast.LENGTH_SHORT).show();
             }
         });
 

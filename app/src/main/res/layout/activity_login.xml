@@ -2,7 +2,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#3f51b5">
+    android:background="#3f51b5"
+    android:id="@+id/coordinatorLayout">
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -69,7 +70,7 @@
             android:id="@+id/forgot_login"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Forget password?"
+            android:text="Forgot password?"
             android:linksClickable="true"
             android:textColor="@android:color/white"
             android:textStyle="italic"
@@ -89,13 +90,13 @@
             android:textSize="15dp"
             android:layout_marginBottom="20dp"
             android:layout_above="@+id/forgot_login"
-            android:layout_alignEnd="@+id/imageView3" />
+            android:layout_marginLeft="150dp" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:id="@+id/imageView3"
-            android:src="@android:drawable/sym_def_app_icon"
+            android:src="@drawable/mess"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true" />
     </RelativeLayout>

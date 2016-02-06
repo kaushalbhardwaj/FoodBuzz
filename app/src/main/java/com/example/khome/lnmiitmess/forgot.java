@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
@@ -33,6 +35,7 @@ public class forgot extends AppCompatActivity {
     private EditText inputEmail;
     private TextInputLayout inputLayoutEmail;
     private Button btnForgot;
+    private CoordinatorLayout coordinatorLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +50,7 @@ public class forgot extends AppCompatActivity {
         inputLayoutEmail = (TextInputLayout) findViewById(R.id.input_layout_email_fo);
         inputEmail = (EditText) findViewById(R.id.input_email_fo);
         btnForgot = (Button) findViewById(R.id.btn_forgot);
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
 
         inputEmail.addTextChangedListener(new MyTextWatcher(inputEmail));
       btnForgot.setOnClickListener(new View.OnClickListener() {
@@ -56,13 +60,17 @@ public class forgot extends AppCompatActivity {
               boolean valid = submitForm();
               if (valid) {
 
-                  Toast.makeText(getApplicationContext(), "okk signup ", Toast.LENGTH_SHORT).show();
+                  //Toast.makeText(getApplicationContext(), "okk signup ", Toast.LENGTH_SHORT).show();
                   if (NetworkTool.isConnectingToInternet(forgot.this)) {
-                      Toast.makeText(getApplicationContext(), "connected to internet ", Toast.LENGTH_SHORT).show();
+                      //Toast.makeText(getApplicationContext(), "connected to internet ", Toast.LENGTH_SHORT).show();
                       forgotFirebase();
-                  } else
-                      showDialogBox();
+                  } else {
+                      Snackbar snackbar = Snackbar.make(coordinatorLayout, "No Internet Connection!", Snackbar.LENGTH_LONG);
+                      //snackbar.setActionTextColor(Color.YELLOW);
+                      snackbar.show();
+                   //   showDialogBox();
 
+                  }
               }
           }
       });
@@ -130,7 +138,7 @@ public class forgot extends AppCompatActivity {
     }
     public void forgotFirebase()
     {
-        final ProgressDialog ringProgressDialog = ProgressDialog.show(forgot.this, "Please wait ...", "Downloading Image ...", true);
+        final ProgressDialog ringProgressDialog = ProgressDialog.show(forgot.this, "Please wait ...", "Connecting....", true);
         ringProgressDialog.setCancelable(false);
         ringProgressDialog.setCanceledOnTouchOutside(false);
         new Thread(new Runnable() {
@@ -150,8 +158,30 @@ public class forgot extends AppCompatActivity {
 
                         @Override
                         public void onError(FirebaseError firebaseError) {
-                            Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
                             ringProgressDialog.dismiss();
+                            Snackbar snackbar;
+                            switch (firebaseError.getCode()) {
+                                case FirebaseError.USER_DOES_NOT_EXIST:
+                                    snackbar = Snackbar.make(coordinatorLayout, "User Does Not Exist!", Snackbar.LENGTH_LONG);
+                                    snackbar.show();
+                                    break;
+                                case FirebaseError.INVALID_PASSWORD:
+                                    snackbar = Snackbar.make(coordinatorLayout, "Invalid Password!", Snackbar.LENGTH_LONG);
+                                    snackbar.show();
+                                    break;
+                                case FirebaseError.NETWORK_ERROR:
+                                    snackbar = Snackbar.make(coordinatorLayout, "Network Error!", Snackbar.LENGTH_LONG);
+                                    snackbar.show();
+                                    break;
+
+
+                                default:
+                                    snackbar = Snackbar.make(coordinatorLayout, "Forgot Error!", Snackbar.LENGTH_LONG);
+                                    snackbar.show();
+
+                                    break;
+                            }
                         }
                     });
 

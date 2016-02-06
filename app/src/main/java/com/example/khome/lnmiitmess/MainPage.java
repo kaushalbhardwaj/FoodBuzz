@@ -3,6 +3,7 @@ package com.example.khome.lnmiitmess;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -32,26 +33,42 @@ public class MainPage extends AppCompatActivity {
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    private CoordinatorLayout coordinatorLayout;
+    private int[] tabIcons = {
+
+            R.drawable.ic_action_ic_query_builder_white_18dp,
+            R.drawable.ic_action_ic_view_day_white,
+            R.drawable.ic_action_ic_today_white
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
         user1=new UserInfo();
         //showSPData();
         UserInfo user1=SharedPreference.getSharedPreferInfo(getApplicationContext());
-        Toast.makeText(MainPage.this, "email:"+user1.getEmail()+" password:"+user1.getPassword(), Toast.LENGTH_SHORT).show();
+        //`Toast.makeText(MainPage.this, "email:"+user1.getEmail()+" password:"+user1.getPassword(), Toast.LENGTH_SHORT).show();
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        //getSupportActionBar().setTitle("");
+        //getSupportActionBar().setIcon(R.drawable.ic_launcher);
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
+        setupTabIcons();
 
 
+    }
+    private void setupTabIcons() {
+        tabLayout.getTabAt(0).setIcon(tabIcons[0]);
+        tabLayout.getTabAt(1).setIcon(tabIcons[1]);
+        tabLayout.getTabAt(2).setIcon(tabIcons[2]);
     }
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
@@ -85,6 +102,7 @@ public class MainPage extends AppCompatActivity {
 
         @Override
         public CharSequence getPageTitle(int position) {
+            //return null;
             return mFragmentTitleList.get(position);
         }
     }
@@ -100,6 +118,7 @@ public class MainPage extends AppCompatActivity {
             case R.id.logout:
                 Intent i3=new Intent(MainPage.this,Logout.class);
                 startActivity(i3);
+                finish();
                 return true;
             case R.id.changepass:
                 Intent i=new Intent(MainPage.this,newPassword.class);
@@ -108,6 +127,10 @@ public class MainPage extends AppCompatActivity {
             case R.id.profile:
                 Intent i2=new Intent(MainPage.this,Profile.class);
                 startActivity(i2);
+                return true;
+            case R.id.test:
+                Intent i4=new Intent(MainPage.this,Test.class);
+                startActivity(i4);
                 return true;
 
             default:

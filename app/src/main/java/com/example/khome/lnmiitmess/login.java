@@ -6,6 +6,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -45,6 +48,7 @@ public class login extends AppCompatActivity {
     TextView signup_login,forgot_login;
     private Toolbar mToolbar;
     private TextInputLayout inputLayoutEmail, inputLayoutPassword;
+    private CoordinatorLayout coordinatorLayout;
 
 
     @Override
@@ -52,6 +56,7 @@ public class login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
         signup_login=(TextView)findViewById(R.id.signup_login);
         forgot_login=(TextView)findViewById(R.id.forgot_login);
         login=(Button)findViewById(R.id.login);
@@ -91,10 +96,14 @@ public class login extends AppCompatActivity {
 
                     //Toast.makeText(getApplicationContext(), "okk login ", Toast.LENGTH_SHORT).show();
                     if (NetworkTool.isConnectingToInternet(login.this)) {
-                        Toast.makeText(getApplicationContext(), "connected to internet ", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), "connected to internet ", Toast.LENGTH_SHORT).show();
                         loginFirebase();
-                    } else
-                        showDialogBox();
+                    } else {
+                        Snackbar snackbar = Snackbar.make(coordinatorLayout, "No Internet Connection!", Snackbar.LENGTH_LONG);
+                        //snackbar.setActionTextColor(Color.YELLOW);
+                        snackbar.show();
+                        //showDialogBox();
+                    }
                 }
 
             }
@@ -115,7 +124,7 @@ public class login extends AppCompatActivity {
         }
     public void loginFirebase()
     {
-        final ProgressDialog ringProgressDialog = ProgressDialog.show(login.this, "Please wait ...", "Downloading Image ...", true);
+        final ProgressDialog ringProgressDialog = ProgressDialog.show(login.this, "Please wait ...", "Connecting....", true);
         ringProgressDialog.setCancelable(false);
         ringProgressDialog.setCanceledOnTouchOutside(false);
         new Thread(new Runnable() {
@@ -128,7 +137,7 @@ public class login extends AppCompatActivity {
                         @Override
                         public void onAuthenticated(AuthData authData) {
                             //System.out.println("User ID: " + authData.getUid() + ", Provider: " + authData.getProvider());
-                            Toast.makeText(getApplicationContext(),"Successfully logged in with uid: " + authData.getUid(),Toast.LENGTH_LONG).show();
+                            //Toast.makeText(getApplicationContext(),"Successfully logged in with uid: " + authData.getUid(),Toast.LENGTH_LONG).show();
                             uid=authData.getUid();
                             fetchData();
 
@@ -148,8 +157,33 @@ public class login extends AppCompatActivity {
 
                         @Override
                         public void onAuthenticationError(FirebaseError firebaseError) {
-                            Toast.makeText(getApplicationContext(),"cannot login !!",Toast.LENGTH_LONG).show();
+
+                            Snackbar snackbar;
+                            switch (firebaseError.getCode()) {
+                                case FirebaseError.USER_DOES_NOT_EXIST:
+                                     snackbar = Snackbar.make(coordinatorLayout, "User Does Not Exist!", Snackbar.LENGTH_LONG);
+                                    snackbar.show();
+                                    break;
+                                case FirebaseError.INVALID_PASSWORD:
+                                    snackbar = Snackbar.make(coordinatorLayout, "Invalid Password!", Snackbar.LENGTH_LONG);
+                                    snackbar.show();
+                                    break;
+                                case FirebaseError.NETWORK_ERROR:
+                                    snackbar = Snackbar.make(coordinatorLayout, "Network Error!", Snackbar.LENGTH_LONG);
+                                    snackbar.show();
+                                    break;
+
+
+                                default:
+                                    snackbar = Snackbar.make(coordinatorLayout, "Login Error!", Snackbar.LENGTH_LONG);
+                                    snackbar.show();
+
+                                    break;
+                            }
+
+                            //Toast.makeText(getApplicationContext(),"cannot login !!",Toast.LENGTH_LONG).show();
                             ringProgressDialog.dismiss();
+
                             // there was an error
                         }
                     });
@@ -182,7 +216,7 @@ public class login extends AppCompatActivity {
                 user2.setEmail(emaillogin.getText().toString());
                 user2.setUid(uid);
 
-                System.out.println("Author: " +user2.getPassword()+user2.getRollno()+user2.getUname() );
+                System.out.println("Author: " + user2.getPassword() + user2.getRollno() + user2.getUname() );
                 SharedPreference.putSharedPreferInfo(getApplicationContext(), user2);
 
             }

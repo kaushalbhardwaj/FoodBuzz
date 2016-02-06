@@ -7,4 +7,8 @@
     <color name="windowBackground">#FFFFFF</color>
     <color name="navigationBarColor">#000000</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="breakfast">#009688</color>
+    <color name="lunch">#FF9800</color>
+    <color name="snacks">#9C27B0</color>
+    <color name="dinner">#F44336</color>
 </resources>

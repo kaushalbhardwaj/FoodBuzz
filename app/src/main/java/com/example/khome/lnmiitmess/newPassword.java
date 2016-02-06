@@ -1,6 +1,8 @@
 package com.example.khome.lnmiitmess;
 
 import android.app.ProgressDialog;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -20,12 +22,14 @@ public class newPassword extends AppCompatActivity {
     EditText npass,opass;
     Button rpass;
     private Toolbar mToolbar;
+    private CoordinatorLayout coordinatorLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_password);
 
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
         mToolbar = (Toolbar) findViewById(R.id.toolbar_np);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("Change Pass");
@@ -39,11 +43,17 @@ public class newPassword extends AppCompatActivity {
             public void onClick(View v) {
                 if(NetworkTool.isConnectingToInternet(newPassword.this))
                 {
-                    Toast.makeText(getApplicationContext(), "connected to internet ", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), "connected to internet ", Toast.LENGTH_SHORT).show();
                     rpassFirebase();
                 }
                 else
-                    NetworkTool.showDialogBox(newPassword.this);
+                {
+
+                    Snackbar snackbar = Snackbar.make(coordinatorLayout, "No Internet Connection!", Snackbar.LENGTH_LONG);
+                    //snackbar.setActionTextColor(Color.YELLOW);
+                    snackbar.show();
+                }
+                    //NetworkTool.showDialogBox(newPassword.this);
             }
         });
 
@@ -60,7 +70,7 @@ public class newPassword extends AppCompatActivity {
     }
     public void rpassFirebase()
     {
-        final ProgressDialog ringProgressDialog = ProgressDialog.show(newPassword.this, "Please wait ...", "Downloading Image ...", true);
+        final ProgressDialog ringProgressDialog = ProgressDialog.show(newPassword.this, "Please wait ...", "Connecting ...", true);
         ringProgressDialog.setCancelable(false);
         ringProgressDialog.setCanceledOnTouchOutside(false);
         new Thread(new Runnable() {
@@ -73,15 +83,41 @@ public class newPassword extends AppCompatActivity {
                     ref.changePassword(em,op , np, new Firebase.ResultHandler() {
                         @Override
                         public void onSuccess() {
+                            Snackbar snackbar = Snackbar.make(coordinatorLayout, "Password Changed!", Snackbar.LENGTH_LONG);
+                            //snackbar.setActionTextColor(Color.YELLOW);
+                            snackbar.show();
                             // password changed
-                            Toast.makeText(getApplicationContext(),"pass changed",Toast.LENGTH_LONG).show();
+                            //Toast.makeText(getApplicationContext(),"pass changed",Toast.LENGTH_LONG).show();
                             ringProgressDialog.dismiss();
                         }
 
                         @Override
                         public void onError(FirebaseError firebaseError) {
+
+                            Snackbar snackbar;
+                            switch (firebaseError.getCode()) {
+                                case FirebaseError.USER_DOES_NOT_EXIST:
+                                    snackbar = Snackbar.make(coordinatorLayout, "User Does Not Exist!", Snackbar.LENGTH_LONG);
+                                    snackbar.show();
+                                    break;
+                                case FirebaseError.INVALID_PASSWORD:
+                                    snackbar = Snackbar.make(coordinatorLayout, "Invalid Password!", Snackbar.LENGTH_LONG);
+                                    snackbar.show();
+                                    break;
+                                case FirebaseError.NETWORK_ERROR:
+                                    snackbar = Snackbar.make(coordinatorLayout, "Network Error!", Snackbar.LENGTH_LONG);
+                                    snackbar.show();
+                                    break;
+
+
+                                default:
+                                    snackbar = Snackbar.make(coordinatorLayout, "Error!", Snackbar.LENGTH_LONG);
+                                    snackbar.show();
+
+                                    break;
+                            }
                             // error encountered
-                            Toast.makeText(getApplicationContext(),"error cannot change pass",Toast.LENGTH_LONG).show();
+                            //Toast.makeText(getApplicationContext(),"error cannot change pass",Toast.LENGTH_LONG).show();
                             ringProgressDialog.dismiss();
                         }
                     });
