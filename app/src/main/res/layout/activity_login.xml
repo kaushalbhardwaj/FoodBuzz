@@ -96,7 +96,7 @@
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:id="@+id/imageView3"
-            android:src="@drawable/mess"
+            android:src="@android:drawable/sym_def_app_icon"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true" />
     </RelativeLayout>

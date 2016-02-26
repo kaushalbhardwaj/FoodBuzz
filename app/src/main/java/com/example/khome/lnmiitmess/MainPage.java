@@ -1,5 +1,7 @@
 package com.example.khome.lnmiitmess;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,12 +26,15 @@ import com.example.khome.lnmiitmess.Tools.SharedPreference;
 import com.example.khome.lnmiitmess.Tools.UserInfo;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class MainPage extends AppCompatActivity {
     public static final String MyPREFERENCES = "UserInfo" ;
     SharedPreferences sharedpreferences;
     UserInfo user1;
+    private PendingIntent pendingIntent;
+    AlarmManager alarmManager;
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
@@ -46,6 +51,7 @@ public class MainPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+
         user1=new UserInfo();
         //showSPData();
         UserInfo user1=SharedPreference.getSharedPreferInfo(getApplicationContext());
@@ -62,6 +68,21 @@ public class MainPage extends AppCompatActivity {
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
         setupTabIcons();
+
+        FragmentManager manager = getSupportFragmentManager();
+        /*PresentTime myFragment = ()manager.findFragmentById(R.id.PresentTime);
+        Bundle bundle1 = new Bundle();
+        bundle1.putString("activity_name", "mainpage");
+        PresentTime fragobj = new PresentTime();
+        fragobj.setArguments(bundle1);
+        */
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 30);
+        Intent myIntent = new Intent(MainPage.this, AlarmReceiver.class);
+        pendingIntent = PendingIntent.getBroadcast(MainPage.this, 0, myIntent, 0);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY, pendingIntent);
 
 
     }

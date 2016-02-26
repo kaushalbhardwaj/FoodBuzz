@@ -11,4 +11,7 @@
     <color name="lunch">#FF9800</color>
     <color name="snacks">#9C27B0</color>
     <color name="dinner">#F44336</color>
+    <color name="accent_dark">#ff2929</color>
+    <color name="accent">#ff5252</color>
+    <color name="secondary_text">#727272</color>
 </resources>
