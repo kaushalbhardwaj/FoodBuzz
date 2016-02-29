@@ -4,14 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.khome.lnmiitmess.MainActivity"
-    android:background="#3F51B5">
+    android:background="@drawable/splash2">
 
 
-    <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:id="@+id/imageView2"
-        android:src="@android:drawable/sym_def_app_icon"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>

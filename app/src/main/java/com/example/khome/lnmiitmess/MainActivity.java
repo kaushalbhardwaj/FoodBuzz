@@ -50,7 +50,15 @@ public class MainActivity extends AppCompatActivity {
 
            // Toast.makeText(MainActivity.this, "fadadsfadf", Toast.LENGTH_SHORT).show();
         }
+        SharedPreferences prefs3 = PreferenceManager.getDefaultSharedPreferences(this);
+        if(!prefsI.getBoolean("firstI", false)) {
 
+            SharedPreference.setDateDatabase(getApplicationContext(), "date09022016");
+
+            SharedPreferences.Editor editor = prefs3.edit();
+            editor.putBoolean("firstI", true);
+            editor.commit();
+        }
 
 
 
